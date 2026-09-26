@@ -25,4 +25,9 @@ include device/nvidia/shield-common/shield.mk
 DEVICE_PACKAGE_OVERLAYS += \
     device/nvidia/porg/overlay
 
+# AmbientDream, the screensaver the overlay above points at. Optional on
+# purpose: a tree without vendor/jetson-tv still configures, it just has no
+# dream to show.
+$(call inherit-product-if-exists, vendor/jetson-tv/jetson-tv.mk)
+
 $(call inherit-product, device/nvidia/foster/device.mk)
