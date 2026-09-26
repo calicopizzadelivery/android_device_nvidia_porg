@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+
+    <!-- device/google/atv sets this true for every Android TV device, with the
+         comment "Keep screen on at all times by default". A set-top box is
+         permanently on mains, so mIsPowered is always true, mStayOn follows,
+         and the user-activity timer never expires — which means the screensaver
+         can never start no matter how it is configured.
+
+         The rest of the timing in that same overlay already assumes a
+         screensaver: def_screen_off_timeout is 900000 with the comment
+         "Default screen timeout set when setting screensaver", and
+         def_sleep_timeout is 86400000 so a hard sleep does not pre-empt the
+         dream. Turning this off is what lets that intent take effect. -->
+    <bool name="def_stay_on_while_plugged_in">false</bool>
+
+    <!-- Never hard-sleep. device/google/atv sets this to 86400000 with the
+         comment "ms until the system goes to sleep, 24 hours default for TV
+         devices", which means a box left alone dreams for a day and then
+         blanks. This box drives a television that should always be showing
+         something, so the screensaver is the resting state rather than a
+         waypoint on the way to no signal.
+
+         PowerManagerService.getSleepTimeoutLocked() returns -1 for any value
+         <= 0, which disables the sleep transition entirely and also stops it
+         clamping screen_off_timeout. Verified: with this set the box reaches
+         mWakefulness=Dreaming and stays there on the same DreamRecord, rather
+         than moving on to Asleep. -->
+    <integer name="def_sleep_timeout">-1</integer>
+
+</resources>

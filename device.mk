@@ -20,4 +20,9 @@ TARGET_TEGRA_HEALTH ?= nobattery
 # Only include Shield apps for first party targets
 include device/nvidia/shield-common/shield.mk
 
+# Screensaver policy for a set-top box; see overlay/ for why each value differs
+# from the Android TV defaults.
+DEVICE_PACKAGE_OVERLAYS += \
+    device/nvidia/porg/overlay
+
 $(call inherit-product, device/nvidia/foster/device.mk)
