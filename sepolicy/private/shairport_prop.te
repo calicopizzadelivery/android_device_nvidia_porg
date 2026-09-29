@@ -1,0 +1,6 @@
+# The property the controlling app writes to turn the receiver on and off, and
+# to name it on the network.
+system_public_prop(shairport_prop)
+
+# Catapult is the panel, and it is a platform app.
+set_prop(platform_app, shairport_prop)

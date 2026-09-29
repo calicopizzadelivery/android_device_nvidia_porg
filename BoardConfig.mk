@@ -16,6 +16,11 @@
 
 include device/nvidia/foster/BoardConfig.mk
 
+# The AirPlay receiver's own domain. Kept here rather than in
+# device/nvidia/sepolicy because that repository is LineageOS's and this is a
+# porg feature.
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += device/nvidia/porg/sepolicy/private
+
 # Assert
 TARGET_OTA_ASSERT_DEVICE := porg
 

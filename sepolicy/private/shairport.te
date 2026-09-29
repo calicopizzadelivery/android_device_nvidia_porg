@@ -1,0 +1,27 @@
+# AirPlay 1 audio receiver. Started by init when
+# persist.jetsontv.airplay.enabled goes true, so nothing has to exec a system
+# binary itself.
+
+# coredomain: this lives on system_ext, not vendor. Without it the domain is
+# treated as a vendor component and executing its own binary trips the
+# "vendor may not execute files from system" neverallows.
+type shairport, domain, coredomain;
+type shairport_exec, system_file_type, exec_type, file_type;
+
+init_daemon_domain(shairport)
+
+# RTSP listener plus the RTP/timing/control sockets, and mDNS on 5353.
+net_domain(shairport)
+allow shairport self:udp_socket { create bind read write setopt getopt getattr };
+allow shairport self:tcp_socket { create bind listen accept read write setopt getopt getattr shutdown };
+
+# Audio goes out through AAudio, which is a binder client of audioserver.
+binder_use(shairport)
+binder_call(shairport, audioserver)
+allow shairport audioserver_service:service_manager find;
+
+# Its optional configuration file.
+allow shairport system_file:dir search;
+
+# Read the settings that configure it.
+get_prop(shairport, shairport_prop)
