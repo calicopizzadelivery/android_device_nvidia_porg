@@ -25,3 +25,14 @@ allow shairport system_file:dir search;
 
 # Read the settings that configure it.
 get_prop(shairport, shairport_prop)
+
+# The metadata pipe: the daemon creates and writes the FIFO, the controlling
+# app reads it. Track titles are not a secret on a shared television, so the
+# directory is world-readable rather than carrying a shared gid around.
+type shairport_data_file, file_type, data_file_type, core_data_file_type;
+allow shairport shairport_data_file:dir { search write add_name remove_name };
+allow shairport shairport_data_file:fifo_file { create open write getattr unlink };
+
+# The app reads it and publishes a MediaSession.
+allow platform_app shairport_data_file:dir search;
+allow platform_app shairport_data_file:fifo_file { open read getattr };
