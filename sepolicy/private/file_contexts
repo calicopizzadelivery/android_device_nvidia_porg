@@ -1,2 +1,9 @@
-/system_ext/bin/shairport-sync    u:object_r:shairport_exec:s0
+# porg has no separate system_ext partition: /system_ext is a symlink to
+# /system/system_ext, and file contexts are matched against the real path when
+# the image is built. The /system_ext form alone silently does not match, and
+# the binary comes out as plain system_file -- at which point init cannot
+# transition it into the shairport domain and the service never starts. Both
+# forms are listed so this keeps working if the partition is ever split out.
+/system/system_ext/bin/shairport-sync    u:object_r:shairport_exec:s0
+/system_ext/bin/shairport-sync           u:object_r:shairport_exec:s0
 /data/misc/airplay(/.*)?          u:object_r:shairport_data_file:s0
