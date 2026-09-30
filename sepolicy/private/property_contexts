@@ -1,1 +1,3 @@
 persist.jetsontv.airplay.    u:object_r:shairport_prop:s0
+# The session-interrupt event: set by the controlling app, watched by init.
+jetsontv.airplay.            u:object_r:shairport_prop:s0
