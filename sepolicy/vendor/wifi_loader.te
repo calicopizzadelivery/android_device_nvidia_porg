@@ -1,0 +1,29 @@
+# Let wifi_loader list the two directories it enumerates cards from.
+#
+# perform_enumeration() in tegra-common's wifi_loader.sh globs
+# /sys/bus/sdio/devices/* and /sys/bus/pci/devices/*. The entries inside are
+# symlinks into /sys/devices, and the vendor/device nodes they point at are
+# already labelled sysfs_pci_device, which upstream's wifi_loader.te can read.
+# The two bus directories themselves are plain sysfs, and this domain had no
+# read on sysfs:dir -- so the glob never expanded, $vendor stayed empty, and
+# the function returned "WiFi card is not available" on any board, with any
+# card fitted. It was never noticed because upstream calls neither function in
+# that script; we do (see the fork of wifi_loader.sh).
+#
+# Read-only, and only what the glob needs: list the directory, follow the
+# symlink. The vendor and device files themselves are covered upstream.
+allow wifi_loader sysfs:dir r_dir_perms;
+allow wifi_loader sysfs:lnk_file read;
+
+# Let it load the modules it ships.
+#
+# Upstream's wifi_loader.te grants `system_file:system module_load` only, but
+# every module this script insmods lives in /vendor/lib/modules, which is
+# vendor_file -- so every insmod in load_modules() was denied. Same root cause
+# as the rule above: the function has never run, on any board, so nothing ever
+# tripped over it.
+allow wifi_loader vendor_file:system module_load;
+
+# lsmod, which the Intel branch uses to see whether the Cypress stack is
+# squatting on cfg80211's symbols before it unloads it.
+allow wifi_loader proc_modules:file r_file_perms;

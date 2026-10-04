@@ -21,6 +21,10 @@ include device/nvidia/foster/BoardConfig.mk
 # porg feature.
 SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += device/nvidia/porg/sepolicy/private
 
+# Read permission for the sysfs directories wifi_loader enumerates cards
+# from; see the file for why upstream's enumeration could never have worked.
+BOARD_VENDOR_SEPOLICY_DIRS += device/nvidia/porg/sepolicy/vendor
+
 # ...and its uid; see config.fs for why it needs one of its own.
 TARGET_FS_CONFIG_GEN += device/nvidia/porg/config.fs
 
