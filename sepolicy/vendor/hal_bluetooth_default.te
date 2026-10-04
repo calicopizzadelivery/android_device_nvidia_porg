@@ -1,0 +1,22 @@
+# Let the Bluetooth HAL open its HCI socket on a 4.9 kernel.
+#
+# The AIDL default HAL talks to the kernel over AF_BLUETOOTH:
+# net_bluetooth_mgmt.cpp does socket(PF_BLUETOOTH, SOCK_RAW, BTPROTO_HCI),
+# bind, read, write. porg selects it (TARGET_TEGRA_BT := btlinux), and the
+# .rc already grants NET_ADMIN, so nothing else is missing.
+#
+# AOSP's own policy grants it as self:bluetooth_socket -- a class that only
+# exists from Linux 4.13, where commit da69a5306ab9 gave every address family
+# its own security class. This kernel is 4.9, so its classmap has no entry for
+# AF_BLUETOOTH and the access arrives as the generic self:socket instead:
+#
+#   avc: denied { create } for comm="android.hardwar" tclass=socket
+#        scontext=u:r:hal_bluetooth_default:s0
+#
+# so the rule upstream wrote is simply never consulted and the HAL cannot
+# start. hal_bluetooth_btlinux -- the other HAL that uses the same transport --
+# carries *both* lines for exactly this reason; hal_bluetooth_default was only
+# ever given the new one. Same permissions as btlinux, no more.
+#
+# This belongs in AOSP's system/sepolicy/vendor/hal_bluetooth_default.te.
+allow hal_bluetooth_default self:socket { create bind read write };
